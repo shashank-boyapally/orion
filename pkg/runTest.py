@@ -5,7 +5,8 @@ run test
 import logging
 from fmatch.matcher import Matcher
 from pkg.logrus import SingletonLogger
-from pkg.utils import run_hunter_analyze, load_config, get_es_url, process_test
+from pkg.utils import load_config, get_es_url, process_test
+from pkg.algorithmFactory import AlgorithmFactory
 
 
 def run(**kwargs):
@@ -32,9 +33,9 @@ def run(**kwargs):
             test, match, kwargs["output_path"], kwargs["uuid"], kwargs["baseline"]
         )
         if kwargs["hunter_analyze"]:
-            testname, result_data = run_hunter_analyze(
-                result, test, output=kwargs["output_format"], matcher=match
-            )
+            algorithmFactory=AlgorithmFactory()
+            algorithm=algorithmFactory.instantiate_algorithm("EDivisive",match,result,test)
+            testname, result_data = algorithm.output(kwargs['output_format'])
             result_output[testname] = result_data
         del match
     return result_output
